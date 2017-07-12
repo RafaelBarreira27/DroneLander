@@ -28,4 +28,10 @@ namespace DroneLander.Common
         public const string AndroidAppId = "7a54e848-e8ee-4c33-8609-e359c76dc3a3";
         public const string iOSAppId = "";
     }
+
+    public static class TelemetryConstants
+    {
+        public const string DisplayName = "Lord";
+        public const string Tagline = "GG WP";
+    }
 }
