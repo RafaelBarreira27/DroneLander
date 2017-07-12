@@ -18,6 +18,11 @@ namespace DroneLander.Common
         public const double StartingThrust = 0.0;
     }
 
+    public static class MobileServiceConstants
+    {
+        public const string AppUrl = "https://lorddrone.azurewebsites.net";
+    }
+
     public static class MobileCenterConstants
     {
         public const string AndroidAppId = "7a54e848-e8ee-4c33-8609-e359c76dc3a3";
