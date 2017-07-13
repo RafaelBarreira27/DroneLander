@@ -8,7 +8,7 @@ using Xamarin.UITest.Queries;
 namespace DroneLander.UITest
 {
     [TestFixture(Platform.Android)]
-    [TestFixture(Platform.iOS)]
+    //[TestFixture(Platform.iOS)]
     public class Tests
     {
         IApp app;
@@ -28,16 +28,30 @@ namespace DroneLander.UITest
         [Test]
         public void AppLaunches()
         {
-            app.Tap(x => x.Button("Start"));
-            app.Screenshot("The app in progress.");
-            app.Flash(x => x.Text("Sign In"));
-            app.SetOrientationLandscape();
-            app.PressVolumeDown();
-            app.PressVolumeDown();
-            app.SetOrientationPortrait();
-            app.Flash(x => x.Button("Reset"));
-            app.PressVolumeUp();
-            app.PressVolumeUp();
+            /*app.Tap("Sign In");
+            app.WaitForElement(c => c.WebView().Css("INPUT#i0116"));
+            app.EnterText(x => x.WebView().Css("INPUT#i0116"), "rafael_jorge_barreira@hotmail.com");
+            app.Tap(x => x.WebView().Css("INPUT#idSIButton9"));
+            app.EnterText(x => x.WebView().Css("INPUT#i0118"), "PASS");
+            app.Back();
+            app.Tap(x => x.WebView().Css("INPUT#idSIButton9"));*/
+
+            app.WaitForElement("ButtonStart");
+            app.Tap("ButtonStart");
+            System.Threading.Thread.Sleep(50000);
+            app.WaitForElement(x => x.Text("Kaboom"));
+            app.Screenshot("CRASH");
+            app.Tap("button2");
+
+            app.WaitForElement("ButtonStart");
+            app.Tap("StartButton");
+            app.SetSliderValue(x => x.Class("FormsSeekBar"), 1000);
+            System.Threading.Thread.Sleep(7000);
+            app.Screenshot("Drone Lander in action");
+            app.Tap("ButtonStart");
+
+
+            //app.Repl();
         }
     }
 }

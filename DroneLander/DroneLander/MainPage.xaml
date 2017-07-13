@@ -26,12 +26,12 @@
             <Label local:DigitalFontEffect.FontFileName="Digital" Style="{DynamicResource DisplayLabelStyle}" Text="{Binding Thrust, Converter={StaticResource DecimalDisplayConverter}}" />
 
             <Label Margin = "0,16,0,0" Style="{DynamicResource CaptionLabelStyle}" Text="Fuel Remaining" />
-            <ProgressBar Progress="{Binding FuelRemaining}" />
+            <ProgressBar AutomationId="Fuel" Progress="{Binding FuelRemaining}" />
 
             <Label Margin = "0,16,0,0" Style="{DynamicResource CaptionLabelStyle}" Text="Throttle"></Label>
             <Slider Minimum="0" Maximum="100" Value="{Binding Throttle, Mode=TwoWay}" />
         </StackLayout>
 
-        <Button Style="{DynamicResource ButtonLabelStyle}" Grid.Row="1" VerticalOptions="Fill" Text="{Binding ActionLabel}" Command="{Binding AttemptLandingCommand}" />
+        <Button AutomationId="ButtonStart" Style="{DynamicResource ButtonLabelStyle}" Grid.Row="1" VerticalOptions="Fill" Text="{Binding ActionLabel}" Command="{Binding AttemptLandingCommand}" />
     </Grid>
 </ContentPage>
