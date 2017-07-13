@@ -44,7 +44,7 @@ namespace DroneLander.UITest
             app.Tap("button2");
 
             app.WaitForElement("ButtonStart");
-            app.Tap("StartButton");
+            app.Tap("ButtonStart");
             app.SetSliderValue(x => x.Class("FormsSeekBar"), 1000);
             System.Threading.Thread.Sleep(7000);
             app.Screenshot("Drone Lander in action");
