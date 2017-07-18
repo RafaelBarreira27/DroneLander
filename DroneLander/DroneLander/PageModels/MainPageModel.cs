@@ -182,7 +182,7 @@ namespace DroneLander.PageModels
                     });
 
                     if (this.FuelRemaining == 0.0) Helpers.AudioHelper.KillEngine();
-                    //if (this.IsAuthenticated) Helpers.ActivityHelper.SendTelemetryAsync(this.UserId, this.Altitude, this.DescentRate, this.FuelRemaining, this.Thrust);
+                    //if (this.IsAuthenticated) Helpers.ActivityHelper.SfSendTelemetryAsync(this.UserId, this.Altitude, this.DescentRate, this.FuelRemaining, this.Thrust);
 
                     return this.IsActive;
                 }
