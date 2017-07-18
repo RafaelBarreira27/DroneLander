@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" Title="Drone Lander"
-             xmlns:local="clr-namespace:DroneLander" 
+             xmlns:local="clr-namespace:DroneLander"
+             xmlns:y="http://schemas.microsoft.com/winfx/2009/xaml" Title="Drone Lander"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              BackgroundImage="drone_lander_back.jpg"
-             x:Class="DroneLander.MainPage">
+             x:Class="DroneLander.Pages.MainPage">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem AutomationId="HighScoreLabel" Text="{Binding HighScoreLabel}" Command="{Binding HighScoreCommand}"/>
         <ToolbarItem AutomationId="SignInLabel" Text="{Binding SignInLabel}" Command="{Binding SignInCommand}"/>
     </ContentPage.ToolbarItems>
 

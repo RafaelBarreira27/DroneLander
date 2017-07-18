@@ -7,14 +7,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using FreshMvvm;
+using DroneLander.Pages;
+using PropertyChanged;
+using System.Diagnostics;
+using DroneLander.Services;
 
-namespace DroneLander
+namespace DroneLander.PageModels
 {
-    public class MainViewModel : Common.ObservableBase
+    public class MainPageModel : FreshBasePageModel
     {
-        public MainViewModel(MainPage activityPage)
+        IScoreService _scoreService;
+        public MainPageModel(IScoreService scoreService) : base ()
         {
-            this.ActivityPage = activityPage;
+            _scoreService = scoreService;
             this.ActiveLandingParameters = new LandingParameters();
             this.Altitude = this.ActiveLandingParameters.Altitude;
             this.Velocity = this.ActiveLandingParameters.Velocity;
@@ -24,131 +30,117 @@ namespace DroneLander
             this.IsActive = false;
             this.CurrentActivity = new ObservableCollection<ActivityItem>();
             this.SignInLabel = "Sign In";
+            this.HighScoreLabel = "High Scores";
         }
 
-        private MainPage _activityPage;
-        public MainPage ActivityPage
+        public override void Init(object initData)
         {
-            get { return this._activityPage; }
-            set { this.SetProperty(ref this._activityPage, value); }
+            base.Init(initData);
         }
+
+        public override void ReverseInit(object returndData) {
+            var tf = returndData as string;
+            if (returndData == "true")
+            {
+                IsAuthenticated = true;
+            }
+            this.SignInLabel = (this.IsAuthenticated) ? "Sign Out" : "Sign In";
+        }
+
+        public Pages.MainPage ActivityPage { get; set; }
 
         public LandingParameters ActiveLandingParameters { get; set; }
 
         private double _altitude;
-        public double Altitude
-        {
-            get { return this._altitude; }
-            set { this.SetProperty(ref this._altitude, value); }
-        }
+        public double Altitude { get; set; }
+
 
         private double _descentRate;
-        public double DescentRate
-        {
-            get { return this._descentRate; }
-            set { this.SetProperty(ref this._descentRate, value); }
-        }
+        public double DescentRate { get; set; }
+
 
         private double _velocity;
-        public double Velocity
-        {
-            get { return this._velocity; }
-            set { this.SetProperty(ref this._velocity, value); }
-        }
+        public double Velocity { get; set; }
+
 
         private double _fuel;
-        public double Fuel
-        {
-            get { return this._fuel; }
-            set { this.SetProperty(ref this._fuel, value); }
-        }
+        public double Fuel { get; set; }
+
 
         private double _fuelRemaining;
-        public double FuelRemaining
-        {
-            get { return this._fuelRemaining; }
-            set { this.SetProperty(ref this._fuelRemaining, value); }
-        }
+        public double FuelRemaining { get; set; }
+
 
         private double _thrust;
-        public double Thrust
-        {
-            get { return this._thrust; }
-            set { this.SetProperty(ref this._thrust, value); }
-        }
+        public double Thrust { get; set; }
+
 
         private double _throttle;
-        public double Throttle
-        {
-            get { return this._throttle; }
-            set
-            {
-                this.SetProperty(ref this._throttle, value);
-                if (this.IsActive && this.FuelRemaining > 0.0) Helpers.AudioHelper.AdjustVolume(value);
-            }
-        }
+        public double Throttle { get; set; }
+        /* {
+             get { return this._throttle; }
+             set
+             {
+                 this.SetProperty(ref this._throttle, value);
+                 if (this.IsActive && this.FuelRemaining > 0.0) Helpers.AudioHelper.AdjustVolume(value);
+             }
+         }*/
 
         private bool _isActionable() => true;
         private string _actionLabel;
-        public string ActionLabel
-        {
-            get { return this._actionLabel; }
-            set { this.SetProperty(ref this._actionLabel, value); }
-        }
+        public string ActionLabel { get; set; }
+        /* {
+             get { return this._actionLabel; }
+             set { this.SetProperty(ref this._actionLabel, value); }
+         }*/
 
         private bool _isActive;
-        public bool IsActive
-        {
+        public bool IsActive { get; set; }
+        /*{
             get { return this._isActive; }
             set { this.SetProperty(ref this._isActive, value); this.ActionLabel = (this.IsActive) ? "Reset" : "Start"; }
-        }
+        }*/
 
-        public System.Windows.Input.ICommand SignInCommand
+
+
+        public Command HighScoreCommand
         {
             get
             {
-                return new RelayCommand(async () =>
-                {
-                    this.CurrentActivity.Clear();
-
-                    if (this.IsAuthenticated)
-                    {
-                        this.IsAuthenticated = !(await App.Authenticator.SignOutAsync());
-                    }
-                    else
-                    {
-                        this.IsAuthenticated = await App.Authenticator.SignInAsync();
-                        if (this.IsAuthenticated) this.UserId = TelemetryManager.DefaultManager.CurrentClient.CurrentUser.UserId.Split(':').LastOrDefault();
-                    }
-
-                    this.SignInLabel = (this.IsAuthenticated) ? "Sign Out" : "Sign In";
-                    var activityToolbarItem = this.ActivityPage.ToolbarItems.Where(w => w.AutomationId.Equals("ActivityLabel")).FirstOrDefault();
-
-                    if (this.IsAuthenticated)
-                    {
-                        if (activityToolbarItem == null)
-                        {
-                            activityToolbarItem = new ToolbarItem()
-                            {
-                                Text = "Activity",
-                                AutomationId = "ActivityLabel",
-                            };
-
-                            activityToolbarItem.Clicked += (s, e) =>
-                            {
-                                this.ActivityPage.Navigation.PushModalAsync(new ViewActivityPage(), true);
-                            };
-
-                            this.ActivityPage.ToolbarItems.Insert(0, activityToolbarItem);
-                        }
-                    }
-                    else
-                    {
-                        if (activityToolbarItem != null) this.ActivityPage.ToolbarItems.Remove(activityToolbarItem);
-                    }
-                });
+                return new Command(() =>
+                                     {
+                                         CoreMethods.PushPageModel<PageModels.HighScorePageModel>();
+                                     });
             }
         }
+
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+
+            MessagingCenter.Subscribe<MainPage, LandingResultType>(this, "ActivityUpdate", (asender, arg) =>
+            {
+                string title = arg.ToString();
+                string message = (arg == LandingResultType.Landed) ? "The Eagle has landed!" : "That's going to leave a mark!";
+                if (arg == LandingResultType.Kaboom) App.PageModel.ShakeLandscapeAsync((ContentPage)CurrentPage);
+            });
+        }
+
+         public Command SignInCommand
+         {
+             get
+             {
+                 return new Command( () =>
+                 {
+                     if (IsAuthenticated) {
+                         IsAuthenticated = false;
+                         this.SignInLabel = (this.IsAuthenticated) ? "Sign Out" : "Sign In";
+                     }
+                     else { CoreMethods.PushPageModel<PageModels.SignInPageModel>(); }
+                     
+                 });
+             }
+         }
 
         public ICommand AttemptLandingCommand
         {
@@ -190,7 +182,7 @@ namespace DroneLander
                     });
 
                     if (this.FuelRemaining == 0.0) Helpers.AudioHelper.KillEngine();
-                    if (this.IsAuthenticated) Helpers.ActivityHelper.SendTelemetryAsync(this.UserId, this.Altitude, this.DescentRate, this.FuelRemaining, this.Thrust);
+                    //if (this.IsAuthenticated) Helpers.ActivityHelper.SendTelemetryAsync(this.UserId, this.Altitude, this.DescentRate, this.FuelRemaining, this.Thrust);
 
                     return this.IsActive;
                 }
@@ -207,15 +199,18 @@ namespace DroneLander
                         this.Thrust = this.ActiveLandingParameters.Thrust;
                     });
 
-                    LandingResultType landingResult = (this.ActiveLandingParameters.Velocity > -5.0) ? LandingResultType.Landed : LandingResultType.Kaboom;
-
-                    if (this.IsAuthenticated)
+                    if (this.ActiveLandingParameters.Velocity > -5.0)
                     {
-                        Helpers.ActivityHelper.SendTelemetryAsync(this.UserId, this.Altitude, this.DescentRate, this.FuelRemaining, this.Thrust);
-                        Helpers.ActivityHelper.AddActivityAsync(landingResult);
+                        LandingResultType landingResult = LandingResultType.Landed;
+                        _scoreService.UpdateScore(new Models.HighScore(_scoreService.Username, Convert.ToString(FuelRemaining)));
                     }
+                    else
+                    {
+                        LandingResultType landingResult = LandingResultType.Kaboom;
+                        _scoreService.UpdateScore(new Models.HighScore(_scoreService.Username, Convert.ToString(0)));
+                    }
+                        //LandingResultType landingResult = (this.ActiveLandingParameters.Velocity > -5.0) ? LandingResultType.Landed : LandingResultType.Kaboom;
 
-                    MessagingCenter.Send(this.ActivityPage, "ActivityUpdate", landingResult);
                     return false;
                 }
             });
@@ -288,39 +283,42 @@ namespace DroneLander
         }
 
         private bool _isAuthenticated;
-        public bool IsAuthenticated
-        {
+        public bool IsAuthenticated { get; set; }
+      /*  {
             get { return this._isAuthenticated; }
             set { this.SetProperty(ref this._isAuthenticated, value); }
-        }
+        }*/
 
         private string _userId;
-        public string UserId
-        {
-            get { return this._userId; }
-            set { this.SetProperty(ref this._userId, value); }
-        }
+        public string UserId { get; set; }
+        /*  {
+              get { return this._userId; }
+              set { this.SetProperty(ref this._userId, value); }
+          }*/
 
         private bool _isBusy;
-        public bool IsBusy
-        {
-            get { return this._isBusy; }
-            set { this.SetProperty(ref this._isBusy, value); }
-        }
+        public bool IsBusy { get; set; }
+        /*   {
+               get { return this._isBusy; }
+               set { this.SetProperty(ref this._isBusy, value); }
+           }*/
 
         private string _signInLabel;
-        public string SignInLabel
-        {
-            get { return this._signInLabel; }
-            set { this.SetProperty(ref this._signInLabel, value); }
-        }
+        public string SignInLabel { get; set; }
+
+
+        public string HighScoreLabel { get; set; }
+        /* {
+             get { return this._signInLabel; }
+             set { this.SetProperty(ref this._signInLabel, value); }
+         }*/
 
         private ObservableCollection<ActivityItem> _currentActivity;
-        public ObservableCollection<ActivityItem> CurrentActivity
-        {
-            get { return this._currentActivity; }
-            set { this.SetProperty(ref this._currentActivity, value); }
-        }
+        public ObservableCollection<ActivityItem> CurrentActivity { get; set; }
+        /*  {
+              get { return this._currentActivity; }
+              set { this.SetProperty(ref this._currentActivity, value); }
+          }*/
 
         public async void LoadActivityAsync()
         {

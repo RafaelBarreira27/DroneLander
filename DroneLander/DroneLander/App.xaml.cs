@@ -1,19 +1,21 @@
-﻿using Microsoft.Azure.Mobile;
+﻿using DroneLander.PageModels;
+using DroneLander.Services;
+using FreshMvvm;
+using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace DroneLander
 {
     public partial class App : Application
     {
-        public static MainViewModel ViewModel { get; set; }
+        public static PageModels.MainPageModel PageModel { get; set; }
 
         public static Services.IAuthenticationService Authenticator { get; private set; }
 
@@ -24,15 +26,23 @@ namespace DroneLander
 
         public App()
         {
+            SetupIOC();
             InitializeComponent();
 
-            MainPage = new NavigationPage(new DroneLander.MainPage());
+            var page = FreshPageModelResolver.ResolvePageModel<MainPageModel>();
+            var mainContainer = new FreshNavigationContainer(page);
+            MainPage = mainContainer;
+            
+        }
+        void SetupIOC()
+        {
+            FreshMvvm.FreshIOC.Container.Register<IScoreService, ScoreService>();
         }
 
         protected override void OnStart()
         {
             // Handle when your app starts
-            MobileCenter.Start($"android={Common.MobileCenterConstants.AndroidAppId};" +
+              MobileCenter.Start($"android={Common.MobileCenterConstants.AndroidAppId};" +
               $"ios={Common.MobileCenterConstants.iOSAppId}",
               typeof(Analytics), typeof(Crashes));
         }

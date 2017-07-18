@@ -1,4 +1,5 @@
 ﻿using DroneLander.Common;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace DroneLander
 {
+   
     public enum LandingResultType { Landed, Kaboom, }
+    [AddINotifyPropertyChangedInterface]
     public class LandingParameters
     {
         public LandingParameters()
@@ -17,10 +20,11 @@ namespace DroneLander
             this.Fuel = CoreConstants.StartingFuel;
             this.Thrust = CoreConstants.StartingThrust;
         }
+        
 
-        public double Altitude;
-        public double Velocity;
-        public double Fuel;
-        public double Thrust;
+        public double Altitude { get; set; }
+        public double Velocity { get; set; }
+        public double Fuel { get; set; }
+        public double Thrust { get; set; }
     }
 }

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DroneLander.Pages.SignInPage"
+             BackgroundImage="drone_lander_back.jpg">
+    <ContentPage.Content>
+        <Grid>
+            <StackLayout>
+                <Label FontAttributes="Bold" Style="{DynamicResource TitleStyle}" Text="Sign In"/>
+                <Entry AutomationId="EntryUsername" Placeholder="Username" Text="{Binding Username}" />
+            </StackLayout>
+            <Button AutomationId="ButtonSignIn" Style="{DynamicResource ButtonLabelStyle}" Grid.Row="1" VerticalOptions="Fill" Text="Sign In" Command="{Binding AcTualSignInCommand}" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

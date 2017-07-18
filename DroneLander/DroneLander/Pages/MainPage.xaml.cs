@@ -3,35 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
-namespace DroneLander
+namespace DroneLander.Pages
 {
-    public partial class MainPage : ContentPage
-    {
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class MainPage : ContentPage
+	{
+		public MainPage ()
+		{
+			InitializeComponent ();
+		}
 
-        protected override void OnAppearing()
+      /*  protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            if (App.ViewModel == null) App.ViewModel = new MainViewModel(this);
+            if (App.PageModel == null) App.PageModel = new PageModels.MainPageModel(/*this);
 
-            this.BindingContext = App.ViewModel;
+            this.BindingContext = App.PageModel;
 
             MessagingCenter.Subscribe<MainPage, LandingResultType>(this, "ActivityUpdate", (sender, arg) =>
             {
                 string title = arg.ToString();
                 string message = (arg == LandingResultType.Landed) ? "The Eagle has landed!" : "That's going to leave a mark!";
-                if (arg == LandingResultType.Kaboom) App.ViewModel.ShakeLandscapeAsync(this);
+                if (arg == LandingResultType.Kaboom) App.PageModel.ShakeLandscapeAsync(this);
 
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     this.DisplayAlert(title, message, "OK");
-                    App.ViewModel.ResetLanding();
+                    App.PageModel.ResetLanding();
                 });
             });
         }
@@ -40,6 +43,7 @@ namespace DroneLander
         {
             base.OnDisappearing();
             MessagingCenter.Unsubscribe<MainPage, LandingResultType>(this, "ActivityUpdate");
-        }
+        }*/
+
     }
 }

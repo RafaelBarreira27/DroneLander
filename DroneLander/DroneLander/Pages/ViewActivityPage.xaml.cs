@@ -20,8 +20,8 @@ namespace DroneLander
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            this.BindingContext = App.ViewModel;
-            App.ViewModel.LoadActivityAsync();
+            this.BindingContext = App.PageModel;
+            App.PageModel.LoadActivityAsync();
         }
     }
 }
